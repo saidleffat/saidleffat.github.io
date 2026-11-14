@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mohamed Said Leffat · Développeur full-stack</title>
+  <meta name="description" content="Portfolio de Mohamed Said Leffat, développeur full-stack (Spring Boot, FastAPI, NestJS, Angular, React) qui applique l'IA et le DevOps. Disponible pour un PFE de 6 mois à partir de janvier 2027.">
+  <meta property="og:title" content="Mohamed Said Leffat · Développeur full-stack">
+  <meta property="og:description" content="Du commit à la prod : applications web, IA appliquée et DevOps.">
+  <meta name="theme-color" content="#05080c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="flash" id="flash" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <div class="boot" id="boot" role="status" aria-live="polite">
+    <div class="boot-inner">
+      <p class="boot-cmd"><span>$</span> docker compose up -d</p>
+      <ul class="boot-lines" id="boot-lines"></ul>
+      <p class="boot-pct"><span id="boot-pct">000</span>%</p>
+    </div>
+  </div>
+
+  <header class="top">
+    <a class="brand" href="#hero" data-scroll="hero">MSL<span>.</span></a>
+    <p class="clock" id="clock">Tunis</p>
+    <nav class="links" aria-label="Sections">
+      <a href="#work" data-scroll="work"><span lang="fr">Projets</span><span lang="en">Work</span></a>
+      <a href="#about" data-scroll="about"><span lang="fr">Parcours</span><span lang="en">About</span></a>
+      <a href="#contact" data-scroll="contact">Contact</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Langue / Language">
+      <button type="button" id="lang-fr" data-lang="fr" aria-pressed="true">FR</button>
+      <button type="button" id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <aside class="chapter-counter" aria-hidden="true">
+    <span id="chapter-now">01</span><span class="sep">/</span><span id="chapter-total">09</span>
+    <div class="bar"><div id="chapter-bar"></div></div>
+  </aside>
+
+  <main>
+    <section class="scene hero" id="hero" data-scene="hero">
+      <div class="hero-text">
+        <p class="eyebrow"><span lang="fr">Élève-ingénieur · ESPRIT · développeur full-stack</span><span lang="en">Engineering student · ESPRIT · full-stack developer</span></p>
+        <h1 class="hero-name"><span>Mohamed Said</span><span class="outline">Leffat</span></h1>
+        <p class="hero-role" lang="fr">Je construis des applications web complètes, et j’y applique l’<em>IA</em> et le <em>DevOps</em> là où ils servent le produit.</p>
+        <p class="hero-role" lang="en">I build complete web applications, and apply <em>AI</em> and <em>DevOps</em> where they serve the product.</p>
+        <p class="status"><span lang="fr">Disponible pour un PFE de 6 mois · janvier 2027</span><span lang="en">Available for a 6-month internship · January 2027</span></p>
+      </div>
+      <p class="scroll-hint"><span lang="fr">Scrolle pour entrer dans l’écran</span><span lang="en">Scroll to enter the screen</span><i aria-hidden="true"></i></p>
+    </section>
+
+    <section class="scene dive" id="dive" data-scene="dive">
+      <p class="dive-text"><span lang="fr">On entre dans le code.</span><span lang="en">Let’s go inside the code.</span></p>
+    </section>
+
+    <section class="scene left" id="me" data-scene="me">
+      <div class="glass">
+        <p class="eyebrow"><span lang="fr">Qui je suis</span><span lang="en">Who I am</span></p>
+        <h2 lang="fr">Un développeur qui livre, de l’idée à la production.</h2>
+        <h2 lang="en">A developer who ships, from idea to production.</h2>
+        <p lang="fr">Élève-ingénieur en dernière année à ESPRIT, spécialité Technologies Web et Internet. 3 stages en 4 ans, dont une plateforme SaaS livrée seul en 2 mois chez Technozor.</p>
+        <p lang="en">Final-year engineering student at ESPRIT, Web and Internet Technologies track. 3 internships in 4 years, including a SaaS platform I shipped on my own in 2 months at Technozor.</p>
+        <div class="figures">
+          <div><b>3</b><span lang="fr">stages</span><span lang="en">internships</span></div>
+          <div><b>2</b><span lang="fr">mois, seul</span><span lang="en">months, solo</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene left" id="dev" data-scene="dev">
+      <div class="glass">
+        <p class="step">01 · <span lang="fr">Je construis l’application</span><span lang="en">I build the application</span></p>
+        <h2 lang="fr">Du modèle de données à l’interface.</h2>
+        <h2 lang="en">From the data model to the interface.</h2>
+        <p lang="fr">Backend Java 17 / Spring Boot de 50 contrôleurs REST et 40 entités JPA, sécurisé par rôles, JWT et rate limiting. 2 applications Angular, 3 langues dont l’arabe en RTL. Côté ERP, NestJS, Prisma et React.</p>
+        <p lang="en">A Java 17 / Spring Boot backend with 50 REST controllers and 40 JPA entities, secured with roles, JWT and rate limiting. 2 Angular apps, 3 languages including right-to-left Arabic. On the ERP side, NestJS, Prisma and React.</p>
+        <ul class="logo-row" data-logos="dev"></ul>
+      </div>
+    </section>
+
+    <section class="scene right" id="ai" data-scene="ai">
+      <div class="glass">
+        <p class="step">02 · <span lang="fr">J’y branche l’IA</span><span lang="en">I plug in AI</span></p>
+        <h2 lang="fr">Un assistant qui lit les documents et cite ses sources.</h2>
+        <h2 lang="en">An assistant that reads documents and cites its sources.</h2>
+        <p lang="fr">Assistant RAG avec LangChain : les PDF sont extraits, classés et indexés dans Qdrant, puis Gemini ou Ollama répondent en moins de 2 secondes, avec l’historique de la conversation. Et un assistant vocal en dialecte tunisien qui crée une facture en une phrase.</p>
+        <p lang="en">A RAG assistant built with LangChain: PDFs are extracted, classified and indexed in Qdrant, then Gemini or Ollama answer in under 2 seconds, with conversation history. Plus a Tunisian Arabic voice assistant that creates an invoice from one sentence.</p>
+        <ul class="logo-row" data-logos="ai"></ul>
+      </div>
+    </section>
+
+    <section class="scene left" id="ops" data-scene="ops">
+      <div class="glass">
+        <p class="step">03 · <span lang="fr">Je la livre</span><span lang="en">I ship it</span></p>
+        <h2 lang="fr">11 conteneurs, un déploiement continu.</h2>
+        <h2 lang="en">11 containers, continuous delivery.</h2>
+        <p lang="fr">La plateforme tourne en 11 conteneurs Docker Compose derrière Nginx. Sur Charikty, Jenkins et SonarQube déploient en continu sur Kubernetes (Azure AKS), supervisé par Prometheus et Grafana : −40 % de temps de déploiement, 0 interruption.</p>
+        <p lang="en">The platform runs as 11 Docker Compose containers behind Nginx. On Charikty, Jenkins and SonarQube deploy continuously to Kubernetes (Azure AKS), monitored with Prometheus and Grafana: 40% faster deployments, zero downtime.</p>
+        <ul class="logo-row" data-logos="ops"></ul>
+      </div>
+    </section>
+
+    <section class="scene work" id="work" data-scene="work">
+      <div class="work-inner">
+        <header class="work-head">
+          <p class="eyebrow"><span lang="fr">Projets</span><span lang="en">Work</span></p>
+          <h2 class="big"><span lang="fr">Ce que j’ai construit</span><span lang="en">What I have built</span></h2>
+          <p class="work-lead" lang="fr">De vrais projets, lancés et capturés : clique sur une capture pour l’agrandir.</p>
+          <p class="work-lead" lang="en">Real projects, run and captured: click a capture to enlarge it.</p>
+        </header>
+
+        <article class="project featured" data-tilt>
+          <div class="carousel" data-shots="legaltech-1,legaltech-2,legaltech-3,legaltech-4,legaltech-5,legaltech-6,legaltech-7,legaltech-8" data-title="LegalTech" data-dark></div>
+          <div class="project-body">
+            <div class="project-top">
+              <img class="project-logo wide" src="images/projects/legaltech-logo.png" alt="LegalTech" width="180" height="44">
+              <span class="tag">Technozor · <span lang="fr">stage 2026</span><span lang="en">internship 2026</span></span>
+            </div>
+            <h3><span lang="fr">Plateforme multi-écoles de formation juridique</span><span lang="en">Multi-school legal training platform</span></h3>
+            <p lang="fr">Livrée seul en 2 mois, de l’architecture à la production. Chaque école a son portail ; l’étudiant paie avec Stripe, suit ses cours PDF, obtient un certificat vérifiable, et pose ses questions à un assistant IA qui répond à partir des documents de l’école.</p>
+            <p lang="en">Shipped solo in 2 months, from architecture to production. Each school has its own portal; students pay with Stripe, follow PDF courses, earn a verifiable certificate, and ask an AI assistant that answers from the school’s documents.</p>
+            <ol class="steps">
+              <li><span lang="fr">Connexion</span><span lang="en">Sign-in</span></li>
+              <li><span lang="fr">Paiement Stripe</span><span lang="en">Stripe payment</span></li>
+              <li><span lang="fr">Cours</span><span lang="en">Courses</span></li>
+              <li><span lang="fr">Certificat</span><span lang="en">Certificate</span></li>
+              <li><span lang="fr">Assistant IA</span><span lang="en">AI assistant</span></li>
+            </ol>
+            <ul class="logo-row" data-logo-list="Spring Boot,Angular,FastAPI,LangChain,Gemini,Ollama,Docker,Nginx"></ul>
+            <div class="project-links">
+              <button type="button" class="link-btn" data-video="media/legaltech-demo.mp4" data-poster="media/legaltech-poster.jpg">▶ <span lang="fr">Voir la démo vidéo</span><span lang="en">Watch the demo video</span></button>
+            </div>
+          </div>
+        </article>
+
+        <div class="project-grid">
+          <article class="project" data-tilt>
+            <div class="carousel" data-shots="charikty-1,charikty-2,charikty-3,charikty-4" data-title="Charikty.tn"></div>
+            <div class="project-body">
+              <div class="project-top">
+                <span class="project-logo mark charikty" aria-hidden="true">C</span>
+                <span class="tag"><span lang="fr">Projet académique · 2025-26</span><span lang="en">Academic project · 2025-26</span></span>
+              </div>
+              <h3>Charikty.tn</h3>
+              <p lang="fr">ERP SaaS multi-tenant pour PME tunisiennes : factures, stocks, clients, conseiller financier IA et devis vocal en dialecte tunisien. CI/CD Jenkins vers Kubernetes (Azure AKS).</p>
+              <p lang="en">Multi-tenant SaaS ERP for Tunisian SMEs: invoices, stock, clients, an AI financial advisor and voice quotes in Tunisian Arabic. Jenkins CI/CD to Kubernetes (Azure AKS).</p>
+              <ul class="logo-row" data-logo-list="React,NestJS,PostgreSQL,Docker,Kubernetes,Jenkins,Grafana"></ul>
+              <div class="project-links"><a class="link-btn" href="https://github.com/slaffet1/projectspi" target="_blank" rel="noopener"><span lang="fr">Voir le code</span><span lang="en">View the code</span> ↗</a></div>
+            </div>
+          </article>
+
+          <article class="project" data-tilt>
+            <div class="carousel" data-shots="eventopia-1,eventopia-2,eventopia-3,eventopia-4" data-title="Eventopia"></div>
+            <div class="project-body">
+              <div class="project-top">
+                <span class="project-logo mark eventopia" aria-hidden="true">E</span>
+                <span class="tag"><span lang="fr">Projet académique · 2024-25</span><span lang="en">Academic project · 2024-25</span></span>
+              </div>
+              <h3>Eventopia</h3>
+              <p lang="fr">Gestion d’événements en desktop (JavaFX) et web (Symfony) : espaces, matériel, réservations, utilisateurs par rôles, commentaires et statistiques.</p>
+              <p lang="en">Event management on desktop (JavaFX) and web (Symfony): venues, equipment, bookings, role-based users, comments and statistics.</p>
+              <ul class="logo-row" data-logo-list="Java,MySQL"></ul>
+              <div class="project-links"><a class="link-btn" href="https://github.com/Aguil-Omar/PI-Project" target="_blank" rel="noopener"><span lang="fr">Voir le code</span><span lang="en">View the code</span> ↗</a></div>
+            </div>
+          </article>
+
+          <article class="project compact" data-tilt>
+            <div class="code-visual" aria-hidden="true">
+              <pre><span class="k">GET</span> /api/teacher/courses   <span class="ok">200</span>
+<span class="k">GET</span> /api/teacher/grades    <span class="ok">200</span>
+<span class="k">POST</span> /api/teacher/absences <span class="ok">201</span>
+<span class="k">GET</span> /api/teacher/claims    <span class="ok">200</span></pre>
+            </div>
+            <div class="project-body">
+              <div class="project-top">
+                <span class="project-logo mark ted" aria-hidden="true">TED</span>
+                <span class="tag">Clevory Training · <span lang="fr">stage 2025</span><span lang="en">internship 2025</span></span>
+              </div>
+              <h3><span lang="fr">Espace Enseignant · TED University</span><span lang="en">TED University teacher portal</span></h3>
+              <p lang="fr">API REST sur Odoo 14 et interface Angular 16, utilisées par 40 enseignants chaque jour. Livré en 3 mois, en Scrum.</p>
+              <p lang="en">REST API on Odoo 14 and an Angular 16 interface, used by 40 teachers every day. Delivered in 3 months with Scrum.</p>
+              <ul class="logo-row" data-logo-list="Odoo,Python,Angular,PostgreSQL,Docker"></ul>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene left" id="about" data-scene="about">
+      <div class="glass wide">
+        <p class="eyebrow"><span lang="fr">Parcours</span><span lang="en">About</span></p>
+        <h2><span lang="fr">3 stages en 4 ans.</span><span lang="en">3 internships in 4 years.</span></h2>
+        <ol class="timeline">
+          <li><span class="when">2026</span><div><strong>Technozor</strong><span lang="fr">Développeur full-stack / IA · plateforme SaaS livrée seul</span><span lang="en">Full-stack / AI developer · SaaS platform shipped solo</span></div></li>
+          <li><span class="when">2025</span><div><strong>Clevory Training</strong><span lang="fr">Développeur full-stack · Espace Enseignant de TED University</span><span lang="en">Full-stack developer · TED University teacher portal</span></div></li>
+          <li><span class="when">2023</span><div><strong>El Jaber Group</strong><span lang="fr">Réseau et infrastructure · audit LAN/WAN, Cisco, sécurité</span><span lang="en">Network and infrastructure · LAN/WAN audit, Cisco, security</span></div></li>
+        </ol>
+        <dl class="facts">
+          <div><dt><span lang="fr">Formation</span><span lang="en">Education</span></dt><dd><span lang="fr">Cycle ingénieur, spécialité TWIN · ESPRIT · 2022 – 2027</span><span lang="en">Engineering degree, TWIN track · ESPRIT · 2022 – 2027</span></dd></div>
+          <div><dt><span lang="fr">Langues</span><span lang="en">Languages</span></dt><dd><span lang="fr">Arabe natif · Français C1 · Anglais B2</span><span lang="en">Arabic native · French C1 · English B2</span></dd></div>
+          <div><dt><span lang="fr">Hors écran</span><span lang="en">Off screen</span></dt><dd><span lang="fr">CrossFit, natation, automobile</span><span lang="en">CrossFit, swimming, cars</span></dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="scene contact" id="contact" data-scene="contact">
+      <div class="contact-inner">
+        <p class="eyebrow">Contact</p>
+        <h2 class="huge"><span lang="fr">Construisons votre PFE 2027.</span><span lang="en">Let’s build your 2027 project.</span></h2>
+        <div class="mail">
+          <code id="email">medsaidlaffet22@gmail.com</code>
+          <button class="btn" type="button" id="copy-email"><span lang="fr">Copier l’e-mail</span><span lang="en">Copy email</span></button>
+          <span class="copied" id="copy-status" role="status" aria-live="polite"></span>
+        </div>
+        <div class="socials">
+          <a href="https://linkedin.com/in/medsaidlaffet" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="https://github.com/slaffet1" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+      <div class="marquee" aria-label="Stack"><ul class="marquee-track" data-logos="all"></ul></div>
+      <footer class="foot"><span>© <span id="year">2026</span> Mohamed Said Leffat</span><span>Tunis, Tunisie</span></footer>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Capture" hidden>
+    <button type="button" class="lb-close" id="lb-close" aria-label="Fermer / Close">✕</button>
+    <button type="button" class="lb-nav lb-prev" id="lb-prev" aria-label="Précédente / Previous">←</button>
+    <figure><img id="lb-img" alt=""><video id="lb-video" controls playsinline preload="none" hidden></video><figcaption id="lb-cap"></figcaption></figure>
+    <button type="button" class="lb-nav lb-next" id="lb-next" aria-label="Suivante / Next">→</button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
