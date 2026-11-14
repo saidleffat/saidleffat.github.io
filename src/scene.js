@@ -3,8 +3,6 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { createDesk } from './world/desk.js';
 import { createPortrait } from './world/portrait.js';
 import { createAvatar, applyPose } from './world/avatar.js';
@@ -87,25 +85,6 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
   scene.add(zones.group);
   scene.add(createStarfield(small ? 1800 : 3600));
 
-  // Optional real avatar: a Mixamo "Typing" FBX, or a GLB with an animation.
-  let mixer = null;
-  const seat = new THREE.Vector3(-0.05, 0, 0.62);
-  function useAvatar(model, animations, scale) {
-    model.scale.setScalar(scale);
-    model.position.copy(seat);
-    model.rotation.y = Math.PI;
-    model.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    desk.coder.group.visible = false;
-    desk.group.add(model);
-    if (animations?.length) {
-      mixer = new THREE.AnimationMixer(model);
-      mixer.clipAction(animations[0]).play();
-    }
-  }
-  const base = import.meta.env.BASE_URL;
-  new FBXLoader().load(`${base}models/avatar-typing.fbx`, (fbx) => useAvatar(fbx, fbx.animations, 0.01), undefined, () => {
-    new GLTFLoader().load(`${base}models/avatar.glb`, (gltf) => useAvatar(gltf.scene, gltf.animations, 1), undefined, () => {});
-  });
 
   // Post-processing: bloom on screens, light strips and particles.
   const composer = new EffectComposer(renderer);
@@ -227,7 +206,6 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
     const near = clamp01(1 - Math.abs(current.cz - KEYFRAMES.me.cz) / 4.2);
     portrait.update(t, reduceMotion ? (near > 0.2 ? 1 : 0) : near * (1 - fall * 0.7));
     zones.update(t, reduceMotion);
-    if (mixer) mixer.update(dt);
 
     composer.render();
   });
