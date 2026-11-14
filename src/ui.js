@@ -93,6 +93,22 @@ export function initUI() {
       .map((l) => `<li><span style="color:${l.color}">${svgMarkup(l, 16)}</span>${l.label}</li>`).join('');
   });
 
+  // Horizontal swipe on touch screens; a tap still counts as a click.
+  function onSwipe(el, left, right) {
+    let x0 = null, y0 = 0;
+    el.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    el.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        el.dataset.swiped = '1';
+        setTimeout(() => { delete el.dataset.swiped; }, 350);
+        (dx < 0 ? left : right)();
+      }
+    }, { passive: true });
+  }
+
   // Lightbox for captures and the demo video (arrows, Escape to close).
   const box = document.getElementById('lightbox');
   const boxImg = document.getElementById('lb-img');
@@ -135,6 +151,7 @@ export function initUI() {
   document.getElementById('lb-prev').addEventListener('click', () => gallery.length && show(current - 1));
   document.getElementById('lb-next').addEventListener('click', () => gallery.length && show(current + 1));
   box.addEventListener('click', (e) => { if (e.target === box) close(); });
+  onSwipe(box, () => gallery.length && show(current + 1), () => gallery.length && show(current - 1));
   window.addEventListener('keydown', (e) => {
     if (box.hidden) return;
     if (e.key === 'Escape') close();
@@ -161,9 +178,11 @@ export function initUI() {
     el.addEventListener('pointerenter', () => { paused = true; });
     el.addEventListener('pointerleave', () => { paused = false; });
     el.addEventListener('click', (e) => {
+      if (el.dataset.swiped) return;
       const slide = e.target.closest('.slide');
       if (slide) openGallery(shots, el.dataset.title, Number(slide.dataset.i));
     });
+    onSwipe(el, () => go(i + 1), () => go(i - 1));
     if (!reduce) setInterval(() => { if (!paused && !document.hidden) go(i + 1); }, 3200 + Math.random() * 800);
   });
 

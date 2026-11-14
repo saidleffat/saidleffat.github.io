@@ -306,8 +306,12 @@ export function createZones(allLogos) {
 
   return {
     group,
-    update(t, reduceMotion) {
+    update(t, reduceMotion, camZ = 0, compact = false) {
       const tt = reduceMotion ? 0 : t;
+      // Only draw the chapters near the camera; on phones the project screens
+      // would sit behind the cards, so they stay hidden there.
+      [dev, ai, ops, work, about, contact].forEach((zone) => { zone.visible = Math.abs(zone.position.z - camZ) < 12.5; });
+      if (compact) work.visible = false;
       dev.children.forEach((c) => { if (c.userData.float !== undefined) c.position.y += Math.sin(tt * 0.8 + c.userData.float) * 0.0015; });
       orbit(dev.userData.logos, tt, 0.25, 1.3);
       ai.userData.core.rotation.set(tt * 0.2, tt * 0.35, 0);

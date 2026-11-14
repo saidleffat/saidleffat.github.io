@@ -265,3 +265,38 @@ main { position: relative; z-index: 5; }
 /* Dark captures (LegalTech) are shown whole; a soft band keeps the fixed header readable. */
 .carousel[data-dark] .slide img { object-fit: contain; object-position: center; }
 .top { background: linear-gradient(180deg, rgba(5, 8, 12, 0.92) 0%, rgba(5, 8, 12, 0.55) 65%, rgba(5, 8, 12, 0) 100%); }
+
+/* ---------- Phones: 3D on top, compact readable panels at the bottom ---------- */
+.scene { min-height: 100vh; min-height: 100svh; }
+@media (max-width: 860px) {
+  .top { padding-top: calc(12px + env(safe-area-inset-top, 0px)); padding-bottom: 12px; }
+  .scene { padding: 96px var(--gr) calc(22px + env(safe-area-inset-bottom, 0px)) var(--gl); }
+  .left, .right { align-items: flex-end; justify-content: stretch; }
+  .glass, .glass.wide { width: 100%; padding: 18px 18px 16px; border-radius: 18px; background: rgba(7, 11, 16, 0.8); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .glass h2 { font-size: 1.35rem; margin: 8px 0; }
+  .glass p { font-size: .9rem; line-height: 1.5; margin-bottom: 12px; }
+  .figures { gap: 22px; }
+  .figures b { font-size: 1.9rem; }
+  .logo-row { gap: 6px; }
+  .logo-row li { font-size: .66rem; padding: 4px 8px 4px 6px; }
+  .logo-row li:nth-child(n + 7) { display: none; }
+  .timeline li { padding: 9px 0; }
+  .facts div { grid-template-columns: 92px minmax(0, 1fr); }
+
+  .hero { padding-bottom: calc(30px + env(safe-area-inset-bottom, 0px)); }
+  .hero::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 72%; z-index: -1; pointer-events: none; background: linear-gradient(180deg, rgba(5, 8, 12, 0), rgba(5, 8, 12, 0.82) 42%, #05080c); }
+  .hero-name { font-size: clamp(2.2rem, 11.5vw, 4.2rem); line-height: .92; margin: 10px 0 14px; }
+  .hero-role { font-size: 1rem; margin-bottom: 16px; }
+  .status { font-size: .8rem; padding: 7px 12px 7px 10px; }
+  .dive-text { font-size: clamp(2rem, 11vw, 3rem); }
+
+  .work { padding-top: 96px; }
+  .work-inner { gap: 16px; }
+  .project { transform: none; }
+  .project-body { padding: 18px; gap: 10px; }
+  .carousel[data-dark] .slide img { object-fit: cover; object-position: top center; }
+  .huge { font-size: clamp(1.9rem, 9vw, 3.4rem); margin-bottom: 22px; }
+  .marquee { margin: 34px 0 18px; }
+  .grain { display: none; }
+  .lightbox { padding-left: 10px; padding-right: 10px; }
+}

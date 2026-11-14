@@ -34,20 +34,23 @@ const smooth = (t) => t * t * (3 - 2 * t);
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, flash } = {}) {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  const small = Math.min(window.innerWidth, window.innerHeight) < 700;
+  // Phones and tablets get a lighter pipeline: no bloom, no shadows, lower resolution.
+  const lite = small || coarse;
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: !lite, powerPreference: 'high-performance' });
   } catch {
     document.documentElement.classList.add('no-webgl');
     onReady();
     return;
   }
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const small = Math.min(window.innerWidth, window.innerHeight) < 700;
-  const pixelRatio = Math.min(window.devicePixelRatio, small ? 1.5 : 1.75);
+  const pixelRatio = Math.min(window.devicePixelRatio, lite ? 1.3 : 1.75);
   renderer.setPixelRatio(pixelRatio);
   renderer.setClearColor(0x05080c, 1);
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !lite;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -61,16 +64,15 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
   rim.position.set(0, 2, -3);
   scene.add(rim);
 
-  const desk = createDesk({ reduceMotion });
+  const desk = createDesk({ reduceMotion, lite });
   scene.add(desk.group);
 
-  const portrait = createPortrait({ columns: small ? 120 : 175, pixelRatio });
+  const portrait = createPortrait({ columns: lite ? 110 : 175, pixelRatio });
   portrait.group.position.set(1.0, 1.35, ZONE_Z.portrait);
   scene.add(portrait.group);
 
   const avatar = createAvatar();
   scene.add(avatar.root);
-  // Toon materials need a clear key light to read as cel-shaded.
   // Lights that travel with the camera so the avatar is lit from the front everywhere.
   const avatarKey = new THREE.DirectionalLight(0xfff1dd, 2.6);
   avatarKey.position.set(1.5, 2.5, 1);
@@ -83,30 +85,41 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
 
   const zones = createZones(ALL);
   scene.add(zones.group);
-  scene.add(createStarfield(small ? 1800 : 3600));
+  scene.add(createStarfield(lite ? 1200 : 3600));
 
+  // Post-processing (desktop only): bloom on screens, light strips and particles.
+  let composer = null;
+  let bloom = null;
+  if (!lite) {
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.7, 0.5, 0.86);
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+  }
 
-  // Post-processing: bloom on screens, light strips and particles.
-  const composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), small ? 0.5 : 0.7, 0.5, 0.86);
-  composer.addPass(bloom);
-  composer.addPass(new OutputPass());
-
-  // Scroll -> target camera state.
+  // Scroll -> target camera state. Section offsets are measured once per layout
+  // change, so scrolling itself never forces a layout.
   const sections = [...document.querySelectorAll('[data-scene]')];
   const frames = sections.map((s) => KEYFRAMES[s.dataset.scene] || KEYFRAMES.hero);
   const target = { ...frames[0] };
   const current = { ...frames[0] };
   const pose = { a: 'idle', b: 'idle', t: 0, mix: 0 };
   let chapter = -1;
+  let tops = [];
+  let viewH = window.innerHeight;
+
+  function measure() {
+    viewH = window.innerHeight;
+    const y = window.scrollY;
+    tops = sections.map((s) => s.getBoundingClientRect().top + y);
+  }
 
   function readScroll() {
-    const vh = window.innerHeight;
+    const y = window.scrollY;
+    const span = viewH * 0.9;
     let pos = 0;
-    for (let i = 1; i < sections.length; i++) {
-      pos += clamp01((vh * 0.9 - sections[i].getBoundingClientRect().top) / (vh * 0.9));
-    }
+    for (let i = 1; i < sections.length; i++) pos += clamp01((span - (tops[i] - y)) / span);
     const i = Math.min(Math.floor(pos), frames.length - 1);
     const t = smooth(pos - i);
     const a = frames[i];
@@ -121,24 +134,36 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
   window.addEventListener('scroll', readScroll, { passive: true });
 
   const pointer = { x: 0, y: 0, sx: 0, sy: 0 };
-  if (!reduceMotion) {
+  if (!reduceMotion && !coarse) {
     window.addEventListener('pointermove', (e) => {
       pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
     }, { passive: true });
   }
 
-  function resize() {
+  let lastW = 0;
+  let lastH = 0;
+  function resize(force = false) {
     const w = window.innerWidth, h = window.innerHeight;
+    // Mobile address bars change the height while scrolling: keep the canvas as is
+    // for those small changes instead of re-allocating it mid-scroll.
+    if (!force && lite && w === lastW && Math.abs(h - lastH) < 160) { measure(); readScroll(); return; }
+    lastW = w; lastH = h;
     renderer.setSize(w, h, false);
-    composer.setSize(w, h);
-    bloom.setSize(w * pixelRatio, h * pixelRatio);
+    if (composer) { composer.setSize(w, h); bloom.setSize(w * pixelRatio, h * pixelRatio); }
     camera.aspect = w / h;
+    // Phones: shift the picture up so the 3D sits above the text panels at the bottom.
+    if (camera.aspect < 0.8) camera.setViewOffset(w, h, 0, h * 0.2, w, h);
+    else camera.clearViewOffset();
     camera.updateProjectionMatrix();
+    measure();
+    readScroll();
   }
-  window.addEventListener('resize', () => { resize(); readScroll(); });
-  resize();
-  readScroll();
+  window.addEventListener('resize', () => resize());
+  // Fonts, images and carousels change section heights after load.
+  if ('ResizeObserver' in window) new ResizeObserver(() => { measure(); readScroll(); }).observe(document.querySelector('main'));
+  window.addEventListener('load', () => { measure(); readScroll(); });
+  resize(true);
   Object.assign(current, target);
 
   const clock = new THREE.Clock();
@@ -168,10 +193,10 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
     const portraitMode = camera.aspect < 0.8;
     const pull = portraitMode ? 1.5 : camera.aspect < 1.2 ? 1.2 : 1;
     const deskZone = current.cz > -1.5;
-    // Phones: centre the content and back away, except while diving into the screen.
+    // Narrow screens: centre the content and back away, except while diving into the screen.
     const cz = deskZone ? current.cz : current.cz + (pull - 1) * 3.2;
     camera.position.set(current.cx + pointer.sx * 0.12, current.cy - pointer.sy * 0.08, cz);
-    look.set(portraitMode ? current.tx * 0.1 : current.tx, current.ty - (portraitMode && !deskZone ? 0.35 : 0), current.tz);
+    look.set(portraitMode ? current.tx * 0.1 : current.tx, current.ty, current.tz);
     camera.lookAt(look);
 
     // White-cyan flash while the camera passes through the monitor and the wall.
@@ -179,20 +204,21 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
 
     desk.group.visible = current.cz > -2.5;
     desk.update(t, dt, desk.group.visible);
-    // Cartoon avatar: rides along with the camera, walks to the free side of each
+    // Voxel avatar: rides along with the camera, walks to the free side of each
     // chapter, strikes that chapter's pose, and skydives while the page scrolls fast.
     const sy = window.scrollY;
     scrollSpeed += (Math.abs(sy - lastScroll) / Math.max(dt, 0.001) - scrollSpeed) * 0.12;
     lastScroll = sy;
     let { px, py, ps } = current;
-    if (portraitMode) { px *= 0.12; py += 1.05; ps *= 0.72; }
+    if (portraitMode) { px *= 0.15; py += 0.3; ps *= 0.62; }
     twinTarget.copy(camera.position)
       .addScaledVector(axisX.set(1, 0, 0).applyQuaternion(camera.quaternion), px)
       .addScaledVector(axisY.set(0, 1, 0).applyQuaternion(camera.quaternion), py)
       .addScaledVector(axisZ.set(0, 0, -1).applyQuaternion(camera.quaternion), current.pd);
     const follow = reduceMotion ? 1 : 1 - Math.exp(-dt * 4);
     avatar.root.position.lerp(twinTarget, follow);
-    fall += ((reduceMotion ? 0 : clamp01((scrollSpeed - 250) / 1600)) - fall) * 0.08;
+    const fallFrom = coarse ? 600 : 250;
+    fall += ((reduceMotion ? 0 : clamp01((scrollSpeed - fallFrom) / 1600)) - fall) * 0.08;
     // Face the camera, turned three-quarters toward the middle of the screen.
     const yaw = (1 - fall) * -Math.sign(px) * 0.4 + pointer.sx * 0.25;
     twinTurn.setFromEuler(twinEuler.set(-pointer.sy * 0.08, yaw, Math.sin(t * 1.7) * 0.25 * fall));
@@ -204,9 +230,11 @@ export function initScene(canvas, { onReady = () => {}, onChapter = () => {}, fl
 
     // Particle portrait in the "who I am" chapter, streaming apart on fast scroll.
     const near = clamp01(1 - Math.abs(current.cz - KEYFRAMES.me.cz) / 4.2);
+    portrait.group.visible = near > 0.01;
     portrait.update(t, reduceMotion ? (near > 0.2 ? 1 : 0) : near * (1 - fall * 0.7));
-    zones.update(t, reduceMotion);
+    zones.update(t, reduceMotion, cz, portraitMode);
 
-    composer.render();
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
   });
 }

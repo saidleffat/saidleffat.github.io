@@ -38,7 +38,7 @@ const LOGS = [
 const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.75, ...extra });
 const shadow = (m) => { m.castShadow = true; m.receiveShadow = true; return m; };
 
-export function createDesk({ reduceMotion }) {
+export function createDesk({ reduceMotion, lite = false }) {
   const group = new THREE.Group();
 
   // Room
@@ -165,7 +165,7 @@ export function createDesk({ reduceMotion }) {
   const lamp = new THREE.SpotLight(0xffb469, 16, 5, 0.95, 0.6, 2);
   lamp.position.copy(bulb.position);
   lamp.target.position.set(-0.1, 0.75, 0.1);
-  lamp.castShadow = true;
+  lamp.castShadow = !lite;
   lamp.shadow.mapSize.set(1024, 1024);
   lamp.shadow.bias = -0.0005;
   group.add(lampArm, lampHead, bulb, lamp, lamp.target);
@@ -258,7 +258,8 @@ export function createDesk({ reduceMotion }) {
       if (!active) return;
       if (!reduceMotion || codeState.chars === 0) {
         codeState.last += dt;
-        if (codeState.last > 0.045) {
+        // Redrawing the screen texture is the costly part: slower on phones.
+        if (codeState.last > (lite ? 0.09 : 0.045)) {
           codeState.last = 0;
           codeState.chars = codeState.chars > total + 60 ? 0 : codeState.chars + (reduceMotion ? total : 2);
           drawCode(t);
