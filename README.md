@@ -35,7 +35,7 @@ Les positions de la caméra pour chaque chapitre sont dans `KEYFRAMES` (`src/sce
 
 ## Mettre en ligne (GitHub Pages)
 
-1. Crée un dépôt GitHub (par exemple `slaffet1.github.io` pour avoir l'adresse `https://slaffet1.github.io`).
+1. Crée un dépôt GitHub (par exemple `saidleffat.github.io` dans une organisation `saidleffat`, pour avoir l'adresse `https://saidleffat.github.io`).
 2. Pousse ce dossier sur la branche `main`.
 3. Dans le dépôt : **Settings → Pages → Source : GitHub Actions**.
 4. Le workflow `.github/workflows/deploy.yml` construit et publie le site à chaque push.
